@@ -39,19 +39,23 @@ def api_view(request):
     if request.POST and request.POST.get('action') == 'edit':
 
         ids = request.POST.get('id')
+        is_ssl = False
         if ids:
             address = request.POST.get('data[address]')
             port = request.POST.get('data[port]')
-            ssl = bool(request.POST.get('data[ssl]'))
-            server = DBSession.query(MyListing).filter_by(id=ids).update({MyListing.port:port,MyListing.address:address,MyListing.ssl:ssl})
+            ssl = request.POST.get('data[ssl]')
+            if ssl == 'true' :is_ssl = True
+            server = DBSession.query(MyListing).filter_by(id=ids).update({MyListing.port:port,MyListing.address:address,MyListing.ssl:is_ssl})
 
         return {'result':True}
     elif request.POST and request.POST.get('action') == 'create':
 
+        is_ssl = False
         new_address = request.POST.get('data[address]')
         new_port = request.POST.get('data[port]')
-        new_ssl = bool(request.POST.get('data[ssl]'))
-        server = MyListing(new_address,new_port,new_ssl)
+        new_ssl = request.POST.get('data[ssl]')
+        if new_ssl == 'true' :is_ssl = True
+        server = MyListing(new_address,new_port,is_ssl)
         DBSession.add(server)
 
         return {'result':True}
